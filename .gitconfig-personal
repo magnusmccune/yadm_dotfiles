@@ -1,0 +1,12 @@
+[user]
+	email = magnusmccune@outlook.com
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHYKmC8NPrg+NVHq7e0pjasfV2jfFG7zZLY6+67qQd3
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[commit]
+  gpgsign = true
