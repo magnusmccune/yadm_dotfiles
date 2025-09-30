@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! xcode-select -p >/dev/null 2>&1; then
+  xcode-select --install || true
+  # wait until installed (best-effort)
+  until xcode-select -p >/dev/null 2>&1; do sleep 2; done
+fi
+
+# 1) Homebrew (install if missing, then load into PATH for this run)
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+eval "$(/usr/bin/which brew shellenv)"
+
+if [[ "$(uname -m)" == "arm64" ]]; then
+  /usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1 || true
+fi
+
+# 2) Core tools & fonts
+brew tap homebrew/cask-fonts
+brew install yadm gnupg pinentry-mac git git-delta
+brew install --cask font-jetbrains-mono-nerd-font
+
+# 3) GPG pinentry (fixes tty/prompt issues)
+mkdir -p "$HOME/.gnupg"
+echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
+grep -q 'GPG_TTY' "$HOME/.zshrc" 2>/dev/null || echo 'export GPG_TTY=$(tty)' >> "$HOME/.zshrc"
+gpgconf --kill gpg-agent || true
+
+# 4) iTerm2: use repo-backed prefs + dynamic profiles
+mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+
+# 5) Restore apps from Brewfile (if present)
+[[ -f "$HOME/.Brewfile" ]] && brew bundle --file "$HOME/.Brewfile"
+
+# 6) yadm niceties
+yadm alt   || true   # apply os/host alternates
+yadm perms || true   # fix ~/.ssh perms etc.
