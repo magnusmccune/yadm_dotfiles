@@ -32,8 +32,8 @@ source <(kubectl completion zsh)
 source <(k3d completion zsh)
 source <(helm completion zsh)
 source <(k3sup completion zsh)
-source /opt/homebrew/etc/bash_completion.d/az                 
-compdef _k3d k3d
+#source /opt/homebrew/etc/bash_completion.d/az                 
+#compdef _k3d k3d
 
 # Aliases
 alias d=docker
@@ -182,7 +182,6 @@ alias aws-unset='unset AWS_DEFAULT_PROFILE'
 # alias hivemq-up='docker run -p 8080:8080 -p 1883:1883 hivemq/hivemq4'
 
 alias firewall-debug='sudo /usr/libexec/ApplicationFirewall/socketfilterfw -d'
-eval $(thefuck --alias)
 
 # Python venvs - set local version with pyenv first `pyenv local 3.y`
 function venv-create() {
@@ -209,51 +208,3 @@ export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
 export PATH="$JAVA_HOME/bin:$PATH"
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/mmccune/.lmstudio/bin"
-# End of LM Studio CLI section
-
-# Start VNC tunnel to devsecops@192.168.20.143 and launch a viewer.
-# usage: vncup [local_port_start=5902] [remote_vnc_port=5902]
-vncup() {
-  local host="devsecops@192.168.20.143"
-  local start="${1:-5902}"
-  local rport="${2:-5902}"   # 5901 for :1, 5902 for :2, etc.
-  local lport="" sock=""
-
-  for p in $(seq "$start" $((start+20))); do
-    if ! lsof -nP -iTCP:$p -sTCP:LISTEN >/dev/null 2>&1; then lport="$p"; break; fi
-  done
-  [[ -z "$lport" ]] && { echo "No free local port in $start-$((start+20))"; return 1; }
-
-  sock="${HOME}/.ssh/cm-vnc-${lport}"
-  # clean any stale control socket for this port
-  ssh -S "$sock" -O exit "$host" 2>/dev/null || true
-
-  ssh -M -S "$sock" -fNT -o ExitOnForwardFailure=yes \
-      -L "${lport}:127.0.0.1:${rport}" "$host" || { echo "Failed to start tunnel."; return 1; }
-
-  export LAST_VNC_PORT="$lport"
-  echo "Tunnel up: localhost:${lport} → ${host}:${rport} (socket: $sock)"
-
-  # Open a viewer (built-in Screen Sharing). Swap for RealVNC/TigerVNC if you prefer.
-  if command -v open >/dev/null; then
-    open -a "Screen Sharing" "vnc://localhost:${lport}"
-  else
-    echo "Open your VNC viewer to localhost:${lport}"
-  fi
-}
-
-# Cleanly stop the tunnel.
-# usage: vncdn [local_port=LAST_VNC_PORT or 5902]
-vncdn() {
-  local host="devsecops@192.168.20.143"
-  local lport="${1:-${LAST_VNC_PORT:-5902}}"
-  local sock="${HOME}/.ssh/cm-vnc-${lport}"
-  ssh -S "$sock" -O exit "$host" 2>/dev/null || true
-  rm -f "$sock"
-  echo "Tunnel down (port ${lport})."
-}
-
-# See any SSH listeners on ports 5900–5999
-vncstatus() {
-  lsof -nP -iTCP -sTCP:LISTEN | awk '/ssh/ && /TCP .*:59[0-9]{2} / {print}'
-}
