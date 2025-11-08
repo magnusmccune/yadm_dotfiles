@@ -1,9 +1,17 @@
 # --- Homebrew completion dirs first ---
+{% if yadm.os == "Darwin" %}
 HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+{% else %}
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
+{% endif %}
 fpath=("$HOMEBREW_PREFIX/share/zsh/functions" \
        "$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
 
+{% if yadm.os == "Darwin" %}
 export PATH="/opt/homebrew/bin:$PATH"
+{% else %}
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+{% endif %}
 
 # --- zsh-autocomplete FIRST (per docs; do NOT call compinit yourself) ---
 source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
@@ -61,9 +69,15 @@ alias k=kubectl
 alias tf=terraform
 alias a=ansible
 alias mp=multipass
+{% if yadm.os == "Darwin" %}
 alias localip="ipconfig getifaddr en0"
 alias ll='ls -lG | sort -r'
 alias lla='\ls -laG | sort -r'
+{% else %}
+alias localip="hostname -I | awk '{print \$1}'"
+alias ll='ls -l --color=auto | sort -r'
+alias lla='\ls -la --color=auto | sort -r'
+{% endif %}
 alias k3d-up='k3d cluster create hivemq --servers 3 --agents 2 --kubeconfig-update-default --kubeconfig-switch-context'
 
 
@@ -127,15 +141,6 @@ alias kset-mobile='kubectl config set current-context mobile-cluster'
 ##
 #
 
-epoch2iso() {
-  ts=$(pbpaste)
-  ts=${ts//[^0-9]/}
-  if [[ ${#ts} -gt 10 ]]; then
-    ts=$((ts / 1000))
-  fi
-  date -r "$ts" -u +"%Y-%m-%dT%H:%M:%SZ"
-}
-
 # Epoch Time to ISO8601
 
 epoch2iso() {
@@ -144,10 +149,15 @@ epoch2iso() {
         return 1
     fi
     # Convert from epoch to ISO8601 using UTC time
+{% if yadm.os == "Darwin" %}
     date -r "$1" -u +"%Y-%m-%dT%H:%M:%SZ"
+{% else %}
+    date -d @"$1" -u +"%Y-%m-%dT%H:%M:%SZ"
+{% endif %}
 }
 
-# Function to quickly get network details for active interfaces(equivalent to `ipconfig /all` on windows)
+{% if yadm.os == "Darwin" %}
+# Function to quickly get network details for active interfaces (equivalent to `ipconfig /all` on windows)
 
 ipconfig_all() {
   # Gather a list of all interfaces that currently have an IP address
@@ -186,6 +196,43 @@ ipconfig_all() {
     echo
   done
 }
+{% else %}
+# Function to quickly get network details for active interfaces
+
+ipconfig_all() {
+  # Get list of active network interfaces (excluding loopback)
+  local active_ifaces=$(ip -o link show | awk -F': ' '$3 !~ /lo|docker|veth/ {print $2}')
+
+  if [ -z "$active_ifaces" ]; then
+    echo "No active network interfaces found."
+    return
+  fi
+
+  # Print summary for each active interface
+  for IFACE in $active_ifaces; do
+    local IP=$(ip -4 addr show "$IFACE" 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
+    local SUBNET=$(ip -4 addr show "$IFACE" 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f2)
+    local GATEWAY=$(ip route | awk '/default/ {print $3; exit}')
+
+    # Only show interfaces with IP addresses
+    if [ -n "$IP" ]; then
+      echo "=== Network Summary for $IFACE ==="
+      echo "IP Address:    ${IP:-N/A}"
+      echo "Subnet CIDR:   /${SUBNET:-N/A}"
+      echo "Gateway:       ${GATEWAY:-N/A}"
+
+      echo "DNS Servers:"
+      if command -v resolvectl &> /dev/null; then
+        resolvectl status "$IFACE" 2>/dev/null | awk '/DNS Servers:/ {flag=1; next} /^[^ ]/ {flag=0} flag {print "   " $1}'
+      elif [ -f /etc/resolv.conf ]; then
+        awk '/^nameserver/ {print "   " $2}' /etc/resolv.conf
+      fi
+      echo "==================================="
+      echo
+    fi
+  done
+}
+{% endif %}
 
 MINICOM='-con'
 export MINICOM
@@ -200,7 +247,11 @@ alias aws-unset='unset AWS_DEFAULT_PROFILE'
 
 # alias hivemq-up='docker run -p 8080:8080 -p 1883:1883 hivemq/hivemq4'
 
+{% if yadm.os == "Darwin" %}
 alias firewall-debug='sudo /usr/libexec/ApplicationFirewall/socketfilterfw -d'
+{% else %}
+alias firewall-status='sudo ufw status verbose'
+{% endif %}
 
 # Python venvs - set local version with pyenv first `pyenv local 3.y`
 function venv-create() {
@@ -209,12 +260,28 @@ function venv-create() {
 }
 alias venv-activate='source .venv/bin/activate'
 
+{% if yadm.os == "Darwin" %}
 alias audio-reset='sudo killall -9 coreaudiod'
+{% else %}
+alias audio-reset='systemctl --user restart pipewire pipewire-pulse || pulseaudio -k && pulseaudio --start'
+{% endif %}
 
 
+{% if yadm.os == "Darwin" %}
 # --- prefer JDK 21 ---
 export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
 export PATH="$JAVA_HOME/bin:$PATH"
+{% else %}
+# --- prefer JDK 21 (adjust path based on your installation) ---
+if [ -d "/usr/lib/jvm/java-21-openjdk-amd64" ]; then
+    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+elif [ -d "/usr/lib/jvm/java-21-openjdk" ]; then
+    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk"
+fi
+if [ -n "$JAVA_HOME" ]; then
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+{% endif %}
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/mmccune/.lmstudio/bin"export DISABLE_AUTOUPDATER=1
@@ -223,7 +290,7 @@ export PATH="$PATH:/Users/mmccune/.lmstudio/bin"export DISABLE_AUTOUPDATER=1
 # >>> nvwb
 # Sourcing the nvwb wrapper function was added during the NVIDIA AI Workbench installation and
 # is required for NVIDIA AI Workbench to function properly. When uninstalling
-# NVIDIA AI Workbench, it will be removed. 
+# NVIDIA AI Workbench, it will be removed.
 
 source $HOME/.local/share/nvwb/nvwb-wrapper.sh
 # >>> nvwb
