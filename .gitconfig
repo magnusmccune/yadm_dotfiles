@@ -7,8 +7,13 @@
 [core]
 	editor = code --wait
 
-[includeIf "gitdir:~/projects/personal/"]
+[includeIf "gitdir:~/Projects/personal/"]
 	path = .gitconfig-personal
 [init]
 	defaultBranch = main
 
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

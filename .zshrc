@@ -1,11 +1,20 @@
+# --- Homebrew completion dirs first ---
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+fpath=("$HOMEBREW_PREFIX/share/zsh/functions" \
+       "$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
+
+export PATH="/opt/homebrew/bin:$PATH"
+
+# --- zsh-autocomplete FIRST (per docs; do NOT call compinit yourself) ---
+source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+
+# --- Prompt/theme AFTER autocomplete ---
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-#    eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/magnusmccune/dotfiles/main/magnus.profile.omp.json')"
-    eval "$(oh-my-posh init zsh --config '/Users/mmccune/projects/personal/dotfiles/magnus.profile.omp.json')"
+  eval "$(oh-my-posh init zsh --config '/Users/mmccune/projects/personal/dotfiles/magnus.profile.omp.json')"
 fi
+
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
-
-source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
@@ -23,17 +32,27 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 HIST_IGNORE_SPACE="true"
 
-# Autocomplete for awscli
-#autoload bashcompinit && bashcompinit
-#autoload -Uz compinit && compinit
-complete -C '/opt/homebrew/bin/aws_completer' aws
+#
+##
+### All Completion stuff
+##
+#
+
+# Make Tab drop into a persistent selection menu
+zmodload zsh/complist
+bindkey '^I' menu-select
+bindkey "$terminfo[kcbt]" reverse-menu-complete  # Shift-Tab moves backwards
+
+# Make suggestions show while you type (no Tab)
+zstyle ':autocomplete:*' delay 0.08
+zstyle ':autocomplete:*' min-input 1
+# (These two are harmless on all versions; on newer builds they explicitly enable auto mode)
+zstyle ':autocomplete:*' auto-insert yes
+zstyle ':autocomplete:*' suggestions yes
 
 source <(kubectl completion zsh)
 source <(k3d completion zsh)
 source <(helm completion zsh)
-source <(k3sup completion zsh)
-#source /opt/homebrew/etc/bash_completion.d/az                 
-#compdef _k3d k3d
 
 # Aliases
 alias d=docker
@@ -44,7 +63,7 @@ alias a=ansible
 alias mp=multipass
 alias localip="ipconfig getifaddr en0"
 alias ll='ls -lG | sort -r'
-alias lla='\ls -laG | sort -r'\
+alias lla='\ls -laG | sort -r'
 alias k3d-up='k3d cluster create hivemq --servers 3 --agents 2 --kubeconfig-update-default --kubeconfig-switch-context'
 
 
@@ -191,20 +210,23 @@ function venv-create() {
 alias venv-activate='source .venv/bin/activate'
 
 alias audio-reset='sudo killall -9 coreaudiod'
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/mc mc
 
 
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/mmccune/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
-
-
-# --- prefer JDK 17 ---
-export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+# --- prefer JDK 21 ---
+export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
 export PATH="$JAVA_HOME/bin:$PATH"
+
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/mmccune/.lmstudio/bin"
+export PATH="$PATH:/Users/mmccune/.lmstudio/bin"export DISABLE_AUTOUPDATER=1
+
+
+# >>> nvwb
+# Sourcing the nvwb wrapper function was added during the NVIDIA AI Workbench installation and
+# is required for NVIDIA AI Workbench to function properly. When uninstalling
+# NVIDIA AI Workbench, it will be removed. 
+
+source $HOME/.local/share/nvwb/nvwb-wrapper.sh
+# >>> nvwb
+
+
+. "$HOME/.local/bin/env"
