@@ -1,1 +1,12 @@
 /.zsh_history
+
+# Claude runtime/ephemeral files
+/.claude/todos/
+/.claude/debug/
+/.claude/file-history/
+/.claude/history.jsonl
+/.claude/ide/
+/.claude/projects/
+/.claude/session-env/
+/.claude/shell-snapshots/
+/.claude/statsig/

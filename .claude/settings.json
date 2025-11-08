@@ -1,0 +1,10 @@
+{
+  "cleanupPeriodDays": 15,
+  "env": {
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_BUG_COMMAND": "1"
+  },
+  "includeCoAuthoredBy": false,
+  "alwaysThinkingEnabled": true
+}

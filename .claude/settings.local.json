@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yadm config:*)",
+      "Bash(yadm status:*)",
+      "Bash(yadm commit:*)",
+      "Bash(yadm push:*)",
+      "Bash(yadm ls-files:*)",
+      "Bash(test:*)",
+      "Bash(readlink:*)",
+      "Bash(yadm add:*)",
+      "Bash(yadm check-ignore:*)",
+      "Bash(yadm encrypt:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
