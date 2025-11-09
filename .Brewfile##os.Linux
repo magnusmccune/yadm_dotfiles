@@ -58,8 +58,10 @@ brew "act"
 brew "hivemq/mqtt-cli/mqtt-cli"
 brew "minicom"
 
+# AI Development Tools
+cask "claude-code"
+
 # Note: Excluded from Linux:
 # - mas (Mac App Store CLI)
-# - All casks (GUI applications) including:
-#   - claude-code (GUI app, use web version or install manually)
+# - Most GUI casks (use package manager instead)
 # - macOS-specific tools
