@@ -75,6 +75,8 @@ brew "pyenv"
 brew "python@3.11"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
+# Terminal multiplexer
+brew "tmux"
 # Vi 'workalike' with many additional features
 brew "vim"
 # Internet file retriever
