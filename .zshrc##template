@@ -13,6 +13,9 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 {% endif %}
 
+# Homebrew Bundle file location
+export HOMEBREW_BUNDLE_FILE="$HOME/.Brewfile"
+
 # GPG setup
 export GPG_TTY=$(tty)
 
