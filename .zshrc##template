@@ -13,6 +13,9 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 {% endif %}
 
+# GPG setup
+export GPG_TTY=$(tty)
+
 # --- zsh-autocomplete FIRST (per docs; do NOT call compinit yourself) ---
 source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
