@@ -100,6 +100,22 @@ tmux send-keys -t dev-session:0.2 "cd ../project-review" C-m
 5. **Merge & Cleanup**: Consolidate work, remove worktrees, update docs
 6. **Document Learnings**: Update project CLAUDE.md with workflow patterns
 
+## Commit Message Format
+
+**Use conventional commit format** (see ~/.claude/conventions/commit-messages.md):
+
+```
+chore: setup worktree for dark-mode feature
+ci: add playwright test workflow
+build: update Docker configuration
+feat: add tmux session automation script
+```
+
+**Commit infrastructure changes atomically**:
+- Each worktree setup = 1 commit
+- CI config changes separate from code
+- Document in commit body if setup is complex
+
 ## Moderate Autonomy Guidelines
 
 ### Decide Independently:

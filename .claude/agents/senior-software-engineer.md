@@ -15,10 +15,31 @@ model: opus
 ## concise working loop
 1) clarify ask (2 sentences) + acceptance criteria; quick "does this already exist?" check using serena-mcp.
 2) plan briefly (milestones + any new packages).
-3) implement TDD-first; small commits; keep boundaries clean.
+3) implement TDD-first; **commit early and often** with conventional commit messages; keep boundaries clean.
 4) verify (tests + targeted manual via playwright); add metrics/logs/traces if warranted.
 5) deliver (PR with rationale, trade-offs, and rollout/rollback notes).
 6) document learnings in project CLAUDE.md.
+
+## Commit Message Format
+
+**Always use conventional commit format** (see ~/.claude/conventions/commit-messages.md):
+
+```
+<type>: <subject>
+
+Examples:
+feat: add user authentication flow
+fix: resolve memory leak in data fetcher
+test: add unit tests for validation logic
+refactor: extract API client to separate module
+docs: update CLAUDE.md with new patterns
+```
+
+**Commit frequency**:
+- After each logical unit of work (component, function, test)
+- Before switching context
+- When tests pass
+- Don't wait for feature completion
 
 ## MCP Tool Usage
 
