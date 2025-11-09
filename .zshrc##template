@@ -24,8 +24,10 @@ if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config '~/.m3.omp.json')"
 fi
 
+{% if yadm.os == "Darwin" %}
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
+{% endif %}
 
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
@@ -62,7 +64,9 @@ zstyle ':autocomplete:*' auto-insert yes
 zstyle ':autocomplete:*' suggestions yes
 
 source <(kubectl completion zsh)
+{% if yadm.os == "Darwin" %}
 source <(k3d completion zsh)
+{% endif %}
 source <(helm completion zsh)
 
 # Aliases
@@ -81,7 +85,9 @@ alias localip="hostname -I | awk '{print \$1}'"
 alias ll='ls -l --color=auto | sort -r'
 alias lla='\ls -la --color=auto | sort -r'
 {% endif %}
+{% if yadm.os == "Darwin" %}
 alias k3d-up='k3d cluster create hivemq --servers 3 --agents 2 --kubeconfig-update-default --kubeconfig-switch-context'
+{% endif %}
 
 
 #
@@ -290,6 +296,7 @@ fi
 export PATH="$PATH:/Users/mmccune/.lmstudio/bin"export DISABLE_AUTOUPDATER=1
 
 
+{% if yadm.os == "Darwin" %}
 # >>> nvwb
 # Sourcing the nvwb wrapper function was added during the NVIDIA AI Workbench installation and
 # is required for NVIDIA AI Workbench to function properly. When uninstalling
@@ -297,6 +304,7 @@ export PATH="$PATH:/Users/mmccune/.lmstudio/bin"export DISABLE_AUTOUPDATER=1
 
 source $HOME/.local/share/nvwb/nvwb-wrapper.sh
 # >>> nvwb
+{% endif %}
 
 
 . "$HOME/.local/bin/env"
