@@ -125,57 +125,14 @@ CLAUDE.md Updated
 
 ## Quick Start
 
-### Prerequisites
+**📖 For concise setup instructions, see [SETUP.md](SETUP.md)**
 
-System already configured with:
-- ✅ tmux installed (`brew install tmux` already run)
-- ✅ Global MCP servers configured
-- ✅ Permissions set for agent tool usage
-- ✅ All agents and commands installed
+The SETUP.md guide provides quick reference for:
+- **Global setup** (one-time, already complete ✅)
+- **Per-project setup** (once per project)
+- **Per-session workflow** (each time you work)
 
-### First Time Setup for a Project
-
-1. **Navigate to your project**:
-   ```bash
-   cd ~/Projects/your-project
-   ```
-
-2. **Initialize project CLAUDE.md** (if needed):
-   ```bash
-   /codebase-sync --init
-   ```
-
-3. **Configure project MCP servers** (optional):
-   Create `.claude/.mcp.json` if project-specific MCP servers needed.
-
-4. **Set project permissions** (optional):
-   Create `.claude/settings.local.json` for project-specific tool permissions.
-
-### Using the System
-
-#### Single Feature Implementation
-
-```bash
-/ship-feature "Add dark mode toggle to settings"
-```
-
-This orchestrates the full workflow autonomously.
-
-#### Parallel Feature Development
-
-```bash
-/parallel-implement "Feature A" "Feature B" "Bug fix C"
-```
-
-Creates worktrees, launches tmux, assigns agents.
-
-#### Weekly Maintenance
-
-```bash
-/codebase-sync
-```
-
-Consolidates agent learnings and updates documentation.
+This README contains comprehensive documentation. Use SETUP.md for quick reference during daily work.
 
 ---
 
