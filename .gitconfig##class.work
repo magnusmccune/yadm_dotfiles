@@ -1,0 +1,123 @@
+[user]
+    name = Magnus McCune
+    email = magnus.mccune@hivemq.com
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHYKmC8NPrg+NVHq7e0pjasfV2jfFG7zZLY6+67qQd3
+
+[core]
+    editor = code --wait
+
+# Personal projects override
+[includeIf "gitdir:~/Projects/personal/"]
+    path = .gitconfig-personal
+
+[init]
+    defaultBranch = main
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+# GPG signing with 1Password
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
+# Pull strategy
+[pull]
+    rebase = true
+    ff = only
+
+# Push configuration
+[push]
+    default = simple
+    autoSetupRemote = true
+    followTags = true
+
+# Rebase configuration
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+# Diff improvements
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    colorMovedWS = allow-indentation-change
+
+[diff "bin"]
+    textconv = hexdump -v -C
+
+# Merge configuration
+[merge]
+    conflictStyle = zdiff3
+    tool = vscode
+
+[mergetool "vscode"]
+    cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+
+# Fetch configuration
+[fetch]
+    prune = true
+    prunetags = true
+    fsckobjects = false
+
+# Status improvements
+[status]
+    showUntrackedFiles = all
+    submoduleSummary = true
+
+# Helpful aliases
+[alias]
+    s = status -sb
+    l = log --oneline --graph --decorate
+    ll = log --graph --pretty=format:'%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset'
+    undo = reset HEAD~1 --mixed
+    today = log --since=midnight --author='Magnus McCune' --oneline
+    amend = commit --amend --no-edit
+    branches = branch --sort=-committerdate
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+    reb = "!r() { git rebase -i HEAD~$1; }; r"
+    changed = diff --name-only HEAD~1 HEAD
+
+# Credential handling
+[credential]
+    helper = osxkeychain
+
+# Rerere - Reuse recorded resolution of conflicted merges
+[rerere]
+    enabled = true
+
+# Maintenance
+[maintenance]
+    auto = true
+    strategy = incremental
+
+# Security
+[transfer]
+    fsckobjects = true
+
+[receive]
+    fsckObjects = true
+
+# Color configuration
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
