@@ -60,5 +60,6 @@ brew "minicom"
 
 # Note: Excluded from Linux:
 # - mas (Mac App Store CLI)
-# - All casks (GUI applications)
+# - All casks (GUI applications) including:
+#   - claude-code (GUI app, use web version or install manually)
 # - macOS-specific tools
