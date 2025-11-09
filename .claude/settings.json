@@ -6,5 +6,54 @@
     "DISABLE_BUG_COMMAND": "1"
   },
   "includeCoAuthoredBy": false,
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "permissions": {
+    "allow": [
+      "mcp__serena-global__*",
+      "mcp__playwright__*",
+      "mcp__github__get_*",
+      "mcp__github__list_*",
+      "mcp__github__search_*",
+      "mcp__filesystem__read_*",
+      "mcp__filesystem__list_*",
+      "mcp__fetch__*",
+      "mcp__brave-search__*",
+      "Bash(git worktree list:*)",
+      "Bash(git worktree add:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(tmux:*)",
+      "Bash(npx playwright:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(rm -rf:*)"
+    ],
+    "ask": [
+      "mcp__github__create_*",
+      "mcp__github__update_*",
+      "mcp__github__delete_*",
+      "mcp__filesystem__write_*",
+      "mcp__filesystem__create_*",
+      "mcp__postgres__*",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh release:*)",
+      "Bash(npm publish:*)",
+      "Bash(docker push:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "serena-global",
+    "playwright",
+    "github",
+    "filesystem",
+    "fetch",
+    "brave-search",
+    "postgres"
+  ]
 }
