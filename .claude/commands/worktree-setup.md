@@ -35,31 +35,31 @@ For each feature name, create:
 ### Example Output
 
 ```
-Current repo: helpful-badger (on branch: main)
+Current repo: <repo-name> (on branch: main)
 Creating worktrees for parallel development...
 
 ✅ Worktree 1: dark-mode
    Branch: feature/dark-mode (created from main)
-   Location: ../helpful-badger-dark-mode
+   Location: ../<repo-name>-dark-mode
    Dependencies: Installed (npm install completed)
 
 ✅ Worktree 2: api-refactor
    Branch: feature/api-refactor (created from main)
-   Location: ../helpful-badger-api-refactor
+   Location: ../<repo-name>-api-refactor
    Dependencies: Installed (npm install completed)
 
 📋 Worktree Summary:
    Total: 2 worktrees created
-   Main repo: /Users/user/Projects/helpful-badger
+   Main repo: /Users/user/Projects/<repo-name>
 
 To use worktrees:
-   cd ../helpful-badger-dark-mode && npm run dev
+   cd ../<repo-name>-dark-mode && npm run dev
 
 To view all worktrees:
    git worktree list
 
 To remove a worktree:
-   git worktree remove ../helpful-badger-dark-mode
+   git worktree remove ../<repo-name>-dark-mode
 ```
 
 ## Implementation Steps
@@ -141,10 +141,10 @@ To remove a worktree:
 
 **Already exists**:
 ```
-❌ Error: Worktree ../helpful-badger-dark-mode already exists
+❌ Error: Worktree ../<repo-name>-dark-mode already exists
 
    Options:
-   1. Remove existing: git worktree remove ../helpful-badger-dark-mode
+   1. Remove existing: git worktree remove ../<repo-name>-dark-mode
    2. Use different name: /worktree-setup dark-mode-v2
 ```
 

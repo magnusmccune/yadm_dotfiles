@@ -109,9 +109,9 @@ Task Analysis:
      Conflicts: None detected
 
 🔧 Setting up infrastructure...
-  ✅ Created worktree: ../helpful-badger-dark-mode
-  ✅ Created worktree: ../helpful-badger-settings
-  ✅ Created worktree: ../helpful-badger-login-fix
+  ✅ Created worktree: ../<repo-name>-dark-mode
+  ✅ Created worktree: ../<repo-name>-settings
+  ✅ Created worktree: ../<repo-name>-login-fix
   ✅ Tmux session: parallel-dev (4 panes)
 
 🚀 Dispatching agents...
@@ -132,7 +132,7 @@ Task Analysis:
 🎉 All tasks complete!
 
 Next steps:
-  1. Review changes: cd ../helpful-badger-dark-mode && git diff main
+  1. Review changes: cd ../<repo-name>-dark-mode && git diff main
   2. Run integration tests across all worktrees
   3. Merge to main or create PRs
 
@@ -257,9 +257,9 @@ If things go wrong:
 tmux kill-session -t parallel-dev
 
 # Remove worktrees
-git worktree remove --force ../helpful-badger-dark-mode
-git worktree remove --force ../helpful-badger-settings
-git worktree remove --force ../helpful-badger-login-fix
+git worktree remove --force ../<repo-name>-dark-mode
+git worktree remove --force ../<repo-name>-settings
+git worktree remove --force ../<repo-name>-login-fix
 git worktree prune
 
 # Return to original state

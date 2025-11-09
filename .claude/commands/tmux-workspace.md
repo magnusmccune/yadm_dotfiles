@@ -110,9 +110,9 @@ Specify number of panes (1-9) and manually assign purposes.
 🚀 Creating tmux workspace: dev-session
 
 📊 Detected Environment:
-   Main repo: /Users/user/Projects/helpful-badger (main)
-   Worktree 1: ../helpful-badger-dark-mode (feature/dark-mode)
-   Worktree 2: ../helpful-badger-api (feature/api-refactor)
+   Main repo: /Users/user/Projects/<repo-name> (main)
+   Worktree 1: ../<repo-name>-dark-mode (feature/dark-mode)
+   Worktree 2: ../<repo-name>-api (feature/api-refactor)
 
 🎛️  Layout: 4-pane parallel (orchestrator + 2 worktrees + logs)
 
