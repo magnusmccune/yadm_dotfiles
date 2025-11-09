@@ -1,39 +1,64 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if ! xcode-select -p >/dev/null 2>&1; then
-  xcode-select --install || true
-  # wait until installed (best-effort)
-  until xcode-select -p >/dev/null 2>&1; do sleep 2; done
+# Detect OS
+OS=$(uname -s)
+
+# macOS-specific: Xcode Command Line Tools
+if [[ "$OS" == "Darwin" ]]; then
+  if ! xcode-select -p >/dev/null 2>&1; then
+    xcode-select --install || true
+    # wait until installed (best-effort)
+    until xcode-select -p >/dev/null 2>&1; do sleep 2; done
+  fi
 fi
 
 # 1) Homebrew (install if missing, then load into PATH for this run)
 if ! command -v brew >/dev/null 2>&1; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
-eval "$(/usr/bin/which brew shellenv)"
 
-if [[ "$(uname -m)" == "arm64" ]]; then
+# Load Homebrew into PATH (different paths for macOS vs Linux)
+if [[ "$OS" == "Darwin" ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
+else
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# macOS ARM-specific: Rosetta
+if [[ "$OS" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
   /usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1 || true
 fi
 
-# 2) Core tools & fonts
-brew tap homebrew/cask-fonts
-brew install yadm gnupg pinentry-mac git git-delta
-brew install --cask font-jetbrains-mono-nerd-font
+# 2) Core tools (platform-specific)
+if [[ "$OS" == "Darwin" ]]; then
+  # macOS: Install GUI-related tools
+  brew tap homebrew/cask-fonts
+  brew install yadm gnupg pinentry-mac git git-delta
+  brew install --cask font-jetbrains-mono-nerd-font
+else
+  # Linux: CLI tools only
+  brew install yadm gnupg pinentry-curses git git-delta
+fi
 
-# 3) GPG pinentry (fixes tty/prompt issues)
+# 3) GPG pinentry (platform-specific)
 mkdir -p "$HOME/.gnupg"
-echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
+if [[ "$OS" == "Darwin" ]]; then
+  echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
+else
+  echo "pinentry-program $(brew --prefix)/bin/pinentry-curses" > "$HOME/.gnupg/gpg-agent.conf"
+fi
 grep -q 'GPG_TTY' "$HOME/.zshrc" 2>/dev/null || echo 'export GPG_TTY=$(tty)' >> "$HOME/.zshrc"
 gpgconf --kill gpg-agent || true
 
-# 4) iTerm2: use repo-backed prefs + dynamic profiles
-mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
-defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
-defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+# 4) macOS-only: iTerm2 preferences
+if [[ "$OS" == "Darwin" ]]; then
+  mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
+  defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
+  defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+fi
 
-# 5) Restore apps from Brewfile (if present)
+# 5) Restore apps from Brewfile (YADM provides OS-specific version)
 [[ -f "$HOME/.Brewfile" ]] && brew bundle --file "$HOME/.Brewfile"
 
 # 6) yadm niceties

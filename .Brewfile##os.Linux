@@ -1,0 +1,63 @@
+# Linux/Ubuntu Brewfile - Headless-compatible CLI tools only
+# No GUI applications (casks) or macOS-specific tools
+
+# Taps (may need to verify Linux support for each)
+tap "hashicorp/tap"
+tap "hivemq/mqtt-cli"
+
+# Core Development Tools
+brew "git"
+brew "gh"
+brew "git-extras"
+brew "gnupg"
+brew "yadm"
+
+# Languages & Version Managers
+brew "go"
+brew "node"
+brew "python@3.11"
+brew "jenv"
+brew "pyenv"
+
+# DevOps & Infrastructure
+brew "ansible"
+brew "ansible-lint"
+brew "awscli"
+brew "docker-compose"
+brew "helm"
+brew "kubernetes-cli"
+brew "k3d"
+brew "terraform", link: false
+brew "hashicorp/tap/terraform"
+brew "opentofu"
+
+# Utilities
+brew "direnv"
+brew "jq"
+brew "yq"
+brew "tree"
+brew "vim"
+brew "wget"
+brew "yamllint"
+brew "netcat"
+
+# Development Tools
+brew "maven"
+brew "gradle"
+brew "protobuf"
+brew "plantuml"
+brew "graphviz"
+
+# Databases
+brew "mysql"
+brew "duckdb"
+
+# Specialized Tools
+brew "act"
+brew "hivemq/mqtt-cli/mqtt-cli"
+brew "minicom"
+
+# Note: Excluded from Linux:
+# - mas (Mac App Store CLI)
+# - All casks (GUI applications)
+# - macOS-specific tools
