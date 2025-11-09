@@ -18,7 +18,7 @@ source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 # --- Prompt/theme AFTER autocomplete ---
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-  eval "$(oh-my-posh init zsh --config '/Users/mmccune/projects/personal/dotfiles/magnus.profile.omp.json')"
+  eval "$(oh-my-posh init zsh --config '~/.m3.omp.json')"
 fi
 
 export PATH="$HOME/.jenv/bin:$PATH"
