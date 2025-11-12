@@ -33,6 +33,54 @@ Before writing PRD, understand what exists:
 For market research and competitive analysis:
 - Use when depth level requires external research
 - Keep research brief and source-backed
+- 
+### Linear (Primary) / Markdown Plans (Fallback)
+Use Linear for information exchange when available. Fall back to `plans/` directory markdown files if Linear is not configured.
+
+**Detecting Linear Availability**:
+Try `mcp__linear-personal__list_teams` first. If it fails, use markdown fallback.
+
+**Linear Tools** (Issues & Comments):
+- `mcp__linear-personal__create_issue` - Create issue for PRD, feature request, or initiative
+  - Use team parameter to specify team
+  - Add labels: NOW/NEXT/LATER for phasing (user preference)
+  - Include description with PRD summary
+  - Link to full PRD document if stored separately
+- `mcp__linear-personal__update_issue` - Update issue with progress, decisions, or scope changes
+- `mcp__linear-personal__create_comment` - Add detailed updates, questions, or blockers
+  - When PRD needs stakeholder feedback
+  - When business goals or metrics need clarification
+  - To share research findings or competitive analysis
+- `mcp__linear-personal__get_issue` - Read issue to understand requirements and context
+- `mcp__linear-personal__list_issues` - Find related issues or dependencies
+
+**Markdown Fallback** (when Linear unavailable):
+- Create `plans/PHASE-feature-name.md` (e.g., `plans/NOW-user-auth.md`)
+- Structure:
+  ```markdown
+  # [Feature Name] PRD
+
+  **Phase**: NOW | NEXT | LATER
+  **Created**: YYYY-MM-DD
+  **Status**: draft | in-review | approved | in-progress
+
+  ## Context & Why Now
+  [Content]
+
+  ## Users & JTBD
+  [Content]
+
+  ## Business Goals & Success Metrics
+  [Content]
+
+  ## Functional Requirements
+  [Numbered requirements with acceptance criteria]
+
+  ## Updates Log
+  ### YYYY-MM-DD HH:MM - Agent Name
+  [Update details, questions, decisions]
+  ```
+- Append updates to "Updates Log" section rather than editing content 
 
 ## CLAUDE.md Updates
 
@@ -54,7 +102,7 @@ After creating PRD, append product context to project CLAUDE.md:
 - Leading indicators (engagement, usage)
 - Lagging indicators (revenue, retention)
 
-**PRD Location**: `path/to/prd.md`
+**PRD Location**: `path/to/prd.md` or linear issue
 ```
 
 On invocation the orchestrator will pass:

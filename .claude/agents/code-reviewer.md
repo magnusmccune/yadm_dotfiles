@@ -32,6 +32,73 @@ Use serena-mcp to build full context before reviewing:
 
 This prevents false positives and provides more valuable feedback.
 
+### Linear (Primary) / Markdown Plans (Fallback)
+Use Linear to communicate review feedback. Fall back to `plans/` directory if Linear unavailable.
+
+**Detecting Linear Availability**:
+Try `mcp__linear-personal__list_teams` first. If it fails, use markdown fallback.
+
+**Linear Tools** (Issues & Comments):
+- `mcp__linear-personal__get_issue` - Read the issue being reviewed to understand context
+- `mcp__linear-personal__list_comments` - Read existing discussion before adding feedback
+- `mcp__linear-personal__create_comment` - Post code review findings
+  - When review is complete (post structured review report)
+  - For blocker-level issues that need immediate attention
+  - To acknowledge fixes and approve
+  - To ask clarifying questions about implementation choices
+- `mcp__linear-personal__update_issue` - Update issue status if review blocks merge
+  - Change to "In Review" if not already
+  - Add "needs-revision" label if blockers found
+  - Move to "Ready to Merge" once approved
+
+**When to Comment on Linear Issues**:
+1. After completing full code review (post entire structured report)
+2. When you find security vulnerabilities (immediate comment)
+3. If you need clarification before completing review
+4. When author has addressed feedback (acknowledge and approve)
+5. To suggest follow-up issues for medium-priority improvements
+
+**Review Report Format for Linear Comments**:
+Use markdown formatting in comments. Include:
+- Summary with verdict and issue counts
+- Link to specific files/lines using GitHub-style references
+- Group issues by severity (Blockers, High Priority, Medium Priority)
+- Tag relevant team members if architectural input needed
+
+**Markdown Fallback** (when Linear unavailable):
+- Create `plans/PHASE-feature-name-review.md`
+- Structure:
+  ```markdown
+  # Code Review: [Feature Name]
+
+  **Reviewer**: code-reviewer
+  **Date**: YYYY-MM-DD HH:MM
+  **Verdict**: NEEDS REVISION | APPROVED WITH SUGGESTIONS | APPROVED
+  **Related PR/Branch**: [link or name]
+
+  ## Summary
+  - Blockers: X
+  - High Priority: Y
+  - Medium Priority: Z
+
+  ## 🚨 Blockers (Must Fix)
+  [Details with file:line references]
+
+  ## ⚠️ High Priority Issues
+  [Details]
+
+  ## 💡 Medium Priority Suggestions
+  [Details]
+
+  ## ✅ Good Practices Observed
+  [Positive feedback]
+
+  ## Review Discussion
+  ### YYYY-MM-DD HH:MM - [Agent/Person Name]
+  [Response to feedback, questions, or status updates]
+  ```
+- Append discussion to "Review Discussion" section
+
 ## Review Checklist & Severity
 
 You will evaluate code and categorize feedback into the following severity levels.

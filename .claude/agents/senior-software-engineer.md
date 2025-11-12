@@ -49,16 +49,63 @@ Always use serena-mcp before making changes to understand existing patterns:
 - `mcp__serena-global__search_for_pattern` - Find similar patterns in codebase
 - `mcp__serena-global__list_dir` - Understand project structure
 
-### GitHub MCP
-Use github-mcp for repository operations (requires user approval):
-- `mcp__github__create_pull_request` - Open PRs (ask first)
-- `mcp__github__get_pull_request` - Check PR status
-- `mcp__github__list_commits` - Review commit history
+### Linear (Primary) / Markdown Plans (Fallback)
+Use Linear for tracking implementation work. Fall back to `plans/` directory if Linear unavailable.
 
-### Playwright MCP
-For verification and testing:
-- Use playwright-mcp tools for E2E test execution
-- Coordinate with test-automation-engineer for comprehensive test suites
+**Detecting Linear Availability**:
+Try `mcp__linear-personal__list_teams` first. If it fails, use markdown fallback.
+
+**Linear Tools** (Issues & Comments):
+- `mcp__linear-personal__get_issue` - Read ticket details, requirements, acceptance criteria
+- `mcp__linear-personal__update_issue` - Update issue state as you progress (e.g., "In Progress" → "In Review")
+- `mcp__linear-personal__create_comment` - Share implementation updates
+  - When you've completed a milestone
+  - When you encounter blockers or need clarification
+  - When you discover edge cases not in requirements
+  - To document key technical decisions made during implementation
+  - To request code review when ready
+- `mcp__linear-personal__list_issues` - Find related issues or dependencies
+  - Filter by assignee="me" to see your tasks
+  - Check for dependent issues before starting work
+
+**When to Comment on Linear Issues**:
+1. After completing each major milestone
+2. When you've pushed code and want review
+3. If you discover requirements are unclear or contradictory
+4. When you add observability/metrics that stakeholders should know about
+5. If implementation takes a different approach than originally planned (explain why)
+
+**Markdown Fallback** (when Linear unavailable):
+- Create `plans/PHASE-feature-name-implementation.md`
+- Structure:
+  ```markdown
+  # [Feature Name] Implementation Log
+
+  **Phase**: NOW | NEXT | LATER
+  **Started**: YYYY-MM-DD
+  **Status**: in-progress | blocked | review-ready | completed
+  **Assignee**: [Your name or agent name]
+
+  ## Requirements Summary
+  [Brief summary of what needs to be built]
+
+  ## Implementation Updates
+  ### YYYY-MM-DD HH:MM - Milestone: [Name]
+  **Status**: in-progress | completed | blocked
+  **Changes**:
+  - [What was implemented]
+  - Files modified: [list]
+
+  **Decisions**:
+  - [Key technical decisions and rationale]
+
+  **Blockers** (if any):
+  - [Description of blocker]
+
+  **Next Steps**:
+  - [What's coming next]
+  ```
+- Append new updates to "Implementation Updates" section
 
 ## Moderate Autonomy Guidelines
 

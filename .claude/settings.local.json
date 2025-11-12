@@ -10,7 +10,8 @@
       "Bash(readlink:*)",
       "Bash(yadm add:*)",
       "Bash(yadm check-ignore:*)",
-      "Bash(yadm encrypt:*)"
+      "Bash(yadm encrypt:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []

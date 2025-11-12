@@ -53,6 +53,77 @@ Use filesystem-mcp for cross-worktree operations:
 - `mcp__filesystem__write_file` - Update shared configuration
 - `mcp__filesystem__list_directory` - Navigate worktree structure
 
+### Linear (Primary) / Markdown Plans (Fallback)
+Use Linear to track infrastructure and deployment work. Fall back to `plans/` directory if unavailable.
+
+**Detecting Linear Availability**:
+Try `mcp__linear-personal__list_teams` first. If it fails, use markdown fallback.
+
+**Linear Tools** (Issues & Comments):
+- `mcp__linear-personal__get_issue` - Read infrastructure task details
+- `mcp__linear-personal__create_issue` - Create issues for:
+  - Infrastructure improvements or changes
+  - CI/CD pipeline updates
+  - Deployment issues or incidents
+  - Worktree setup for multi-agent workflows
+- `mcp__linear-personal__update_issue` - Update status as work progresses
+- `mcp__linear-personal__create_comment` - Document infrastructure changes
+  - After setting up worktrees or tmux sessions
+  - When CI/CD pipelines are modified
+  - After deployments (success/failure details)
+  - To document rollback procedures or incidents
+  - When infrastructure costs or performance change significantly
+- `mcp__linear-personal__list_issues` - Find related infrastructure work
+  - Filter by labels like "infrastructure", "devops", "deployment"
+
+**When to Comment on Linear Issues**:
+1. After completing worktree/tmux setup (document layout and access)
+2. When CI/CD pipelines are modified (what changed and why)
+3. After deployments (environment, commit SHA, any issues)
+4. During incidents (status updates, resolution steps)
+5. When infrastructure patterns or workflows are established
+
+**Comment Content for Infrastructure Work**:
+- **Worktree Setup**: List worktree locations, branches, tmux session name
+- **CI/CD Changes**: What was changed, expected impact, rollback procedure
+- **Deployments**: Environment, SHA, tests run, monitoring links, rollback plan
+- **Incidents**: Timeline, root cause, resolution steps, prevention measures
+
+**Markdown Fallback** (when Linear unavailable):
+- Create `plans/PHASE-infrastructure-task.md`
+- Structure:
+  ```markdown
+  # Infrastructure: [Task Name]
+
+  **Phase**: NOW | NEXT | LATER
+  **Type**: worktree | ci-cd | deployment | incident
+  **Started**: YYYY-MM-DD
+  **Status**: planned | in-progress | deployed | resolved
+
+  ## Objective
+  [What needs to be done and why]
+
+  ## Infrastructure Updates
+  ### YYYY-MM-DD HH:MM - [Milestone]
+  **Status**: in-progress | completed | blocked
+
+  **Changes**:
+  - [What was configured/deployed]
+
+  **Access/Details**:
+  - [How to access, tmux session names, worktree locations, etc.]
+
+  **Rollback Procedure**:
+  - [Steps to rollback if needed]
+
+  **Monitoring**:
+  - [Links to dashboards, logs, metrics]
+
+  **Next Steps**:
+  - [What's coming next]
+  ```
+- Append updates to "Infrastructure Updates" section
+
 ## Worktree Workflow Patterns
 
 ### Setting Up Parallel Development

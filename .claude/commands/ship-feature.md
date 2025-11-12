@@ -26,6 +26,8 @@ User Input (Feature Request)
    Create Pull Request
          ↓
    Update CLAUDE.md
+         ↓
+   Update Linear Priorities (Phase 6)
 ```
 
 ## When to Use
@@ -68,13 +70,13 @@ Run these agents in parallel to gather context:
    - Create lightweight PRD
    - Define acceptance criteria
    - Identify success metrics
-   - Output: `Plans/prd-<feature-name>.md`
+   - Output: `plans/prd-<feature-name>.md` or `plans/prd-<linear-issue>.md`
 
 3. **ux-designer** (Agent 2)
    - Design user flow and states
    - Reuse existing components
    - Define accessibility requirements
-   - Output: `Plans/design-<feature-name>.md`
+   - Output: `plans/design-<feature-name>.md` or `plans/design-<linear-issue>.md`
 
 **Checkpoint 1**: User reviews PRD + Design (30-second review)
 ```
@@ -145,6 +147,18 @@ If tests fail → senior-software-engineer fixes → re-run tests
    - Create PR with comprehensive description
    - Link to PRD and design docs
    - **Requires user approval** before creating PR
+
+### Phase 6: Priority Management
+
+8. **Update Linear Priorities** (after PR created)
+   - Update Linear ticket status to "Done"
+   - Apply priority rules to all backlog issues:
+     - Next task to work on → **Urgent** (Priority 1)
+     - NOW label → **High** (Priority 2)
+     - NEXT label → **Medium** (Priority 3)
+     - LATER label → **Low** (Priority 4)
+   - Identify the next task (next issue by lowest issue number with NOW label)
+   - Promote that task to Urgent priority
 
 **PR Description Template**:
 ```markdown
@@ -293,16 +307,25 @@ Phase 5: Documentation & PR
 ✅ Pull request created: PR #42
    URL: https://github.com/<user>/<repo>/pull/42
 
+Phase 6: Priority Management
+  🎯 Updating Linear priorities...
+     ✅ Marked M3L-31 as "Done"
+     ✅ Updated 4 backlog issues with phase-based priorities
+     ✅ Promoted M3L-35 to Urgent (next task to work on)
+     ⏱️  Duration: 1 minute
+
 📊 Summary:
-   ⏱️  Total time: 32 minutes (agents working autonomously)
+   ⏱️  Total time: 33 minutes (agents working autonomously)
    ✅ All quality gates passed
    📝 Documentation updated
    🧪 Test coverage: 92%
+   🎯 Next task ready: M3L-35 (Urgent priority)
 
 Next steps:
    1. Review PR on GitHub
    2. Request reviews from team
    3. Merge when approved
+   4. Work on M3L-35 (now marked Urgent)
 ```
 
 ## Error Handling
@@ -360,7 +383,7 @@ Next steps:
 
 When invoked with `--linear PROJ-123`:
 
-1. Fetch ticket from Linear via `gh api` or Linear API
+1. Fetch ticket from Linear via Linear MCP
 2. Extract:
    - Title → Feature name
    - Description → User story & requirements
@@ -372,6 +395,34 @@ After PR created:
 - Update Linear ticket with PR link
 - Add comment: "PR created by Claude Code autonomous workflow"
 - Move ticket to "In Review" status (if user configured)
+
+After PR merged/ticket marked "Done":
+1. **Update priorities for all backlog issues**:
+   ```bash
+   # Priority rules based on phase labels
+   - Next task (first NOW issue in backlog) → Urgent (Priority 1)
+   - All NOW label issues → High (Priority 2)
+   - All NEXT label issues → Medium (Priority 3)
+   - All LATER label issues → Low (Priority 4)
+   ```
+
+2. **Automatic priority promotion**:
+   - When a NOW task is completed, the next NOW task becomes Urgent
+   - Ensures continuous workflow: always one Urgent task to work on next
+   - Phase labels (NOW/NEXT/LATER) remain stable, priorities update dynamically
+
+3. **Example workflow**:
+   ```
+   Before completing M3L-31:
+   - M3L-31 (NOW) → Urgent ✓ (working on this)
+   - M3L-35 (NOW) → High
+   - M3L-54 (NEXT) → Medium
+
+   After completing M3L-31:
+   - M3L-31 → Done (archived)
+   - M3L-35 (NOW) → Urgent ✓ (promoted - work on this next)
+   - M3L-54 (NEXT) → Medium
+   ```
 
 ## Success Metrics
 

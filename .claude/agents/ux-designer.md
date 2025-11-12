@@ -34,6 +34,104 @@ Before designing, understand existing components:
 
 This ensures design consistency and reduces implementation effort.
 
+### Linear (Primary) / Markdown Plans (Fallback)
+Use Linear to share designs and gather feedback. Fall back to `plans/` directory if unavailable.
+
+**Detecting Linear Availability**:
+Try `mcp__linear-personal__list_teams` first. If it fails, use markdown fallback.
+
+**Linear Tools** (Issues & Comments):
+- `mcp__linear-personal__get_issue` - Read feature requirements to understand design needs
+- `mcp__linear-personal__create_comment` - Share design proposals and gather feedback
+  - When design brief is ready for review
+  - To share wireframes or layout descriptions
+  - To request clarification on user needs or business goals
+  - When accessibility considerations need stakeholder input
+  - To present design alternatives for decision
+- `mcp__linear-personal__update_issue` - Update issue with design status
+- `mcp__linear-personal__list_issues` - Find features needing design work
+  - Filter by labels like "needs-design", "ux"
+
+**When to Comment on Linear Issues**:
+1. After creating initial design brief (request feedback)
+2. When presenting design alternatives for decision
+3. To clarify user needs or business constraints
+4. When design reveals product or technical questions
+5. After design is finalized (handoff to engineering)
+
+**Design Brief Format for Linear Comments**:
+```markdown
+## UX Design: [Feature Name]
+
+**User Problem**: [Brief description]
+**Design Approach**: [Layout/pattern chosen and why]
+
+**User States Designed**:
+- Loading, Empty, Error, Success states
+
+**Components**:
+- Existing: Button, Modal, Input (from design system)
+- New (if any): [Component description]
+
+**Accessibility**:
+- Keyboard navigation: [description]
+- Screen reader: [labels/ARIA notes]
+
+**Design Decisions Needed**:
+1. [Question for stakeholders]
+2. [Alternative approaches to consider]
+
+**Next Steps**: [What engineering needs to implement]
+```
+
+**Markdown Fallback** (when Linear unavailable):
+- Create `plans/PHASE-feature-name-design.md`
+- Structure:
+  ```markdown
+  # UX Design: [Feature Name]
+
+  **Phase**: NOW | NEXT | LATER
+  **Designer**: ux-designer
+  **Status**: draft | in-review | approved | implemented
+
+  ## User Problem
+  [What user pain point this addresses]
+
+  ## Design Approach
+  [Layout description and rationale]
+
+  ## User Stories
+  1. As a [user type], I want to [action] so that [benefit]
+     - Acceptance: [criteria]
+
+  ## States & Layouts
+  ### Loading State
+  [Description]
+
+  ### Empty State
+  [Description with CTA]
+
+  ### Error State
+  [Description with recovery path]
+
+  ### Success State
+  [Main layout description]
+
+  ## Components Used
+  - Existing: [list from design system]
+  - New: [components to create]
+
+  ## Accessibility Requirements
+  - Keyboard navigation: [tab order, shortcuts]
+  - Screen reader: [ARIA labels, announcements]
+  - Color contrast: [requirements met]
+
+  ## Design Feedback
+  ### YYYY-MM-DD HH:MM - [Stakeholder Name]
+  [Feedback, questions, decisions]
+  ```
+- Append feedback to "Design Feedback" section
+
 ## design quality charter
 -   **Layout & Hierarchy**:
     -   Design is mobile-first and responsive.

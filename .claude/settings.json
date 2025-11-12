@@ -6,7 +6,6 @@
     "DISABLE_BUG_COMMAND": "1"
   },
   "includeCoAuthoredBy": false,
-  "alwaysThinkingEnabled": true,
   "permissions": {
     "allow": [
       "mcp__serena-global__*",
@@ -18,6 +17,9 @@
       "mcp__filesystem__list_*",
       "mcp__fetch__*",
       "mcp__brave-search__*",
+      "mcp__linear__get_*",
+      "mcp__linear__list_*",
+      "mcp__linear__search_*",
       "Bash(git worktree list:*)",
       "Bash(git worktree add:*)",
       "Bash(git worktree remove:*)",
@@ -36,6 +38,9 @@
       "mcp__github__create_*",
       "mcp__github__update_*",
       "mcp__github__delete_*",
+      "mcp__linear__create_*",
+      "mcp__linear__update_*",
+      "mcp__linear__delete_*",
       "mcp__filesystem__write_*",
       "mcp__filesystem__create_*",
       "mcp__postgres__*",
@@ -47,13 +52,5 @@
       "Bash(docker push:*)"
     ]
   },
-  "enabledMcpjsonServers": [
-    "serena-global",
-    "playwright",
-    "github",
-    "filesystem",
-    "fetch",
-    "brave-search",
-    "postgres"
-  ]
+  "alwaysThinkingEnabled": true
 }
