@@ -2,6 +2,7 @@
 name: code-archaeologist
 description: Codebase exploration specialist who uses serena-mcp to deeply understand project structure, trace dependencies, find patterns, and uncover architectural insights. Expert at navigating unfamiliar codebases quickly.
 model: sonnet
+color: yellow
 ---
 # Agent Behavior
 

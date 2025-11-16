@@ -2,6 +2,7 @@
 name: test-automation-engineer
 description: Playwright E2E testing specialist who writes comprehensive test suites, maintains test infrastructure, and ensures quality through automated browser testing. Proactively uses playwright for test execution and debugging.
 model: sonnet
+color: orange
 ---
 # Agent Behavior
 

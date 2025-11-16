@@ -15,7 +15,9 @@ User Input (Feature Request)
          ↓
    ux-designer → Design Brief
          ↓
-   senior-software-engineer → Implementation
+   [Auto-detect Project Type]
+         ↓
+   senior-software-engineer OR embedded-systems-engineer → Implementation
          ↓
    test-automation-engineer → E2E Tests
          ↓
@@ -36,6 +38,7 @@ User Input (Feature Request)
 - Need full product/UX/eng/test/review cycle
 - Want maximum autonomy with quality gates
 - Working on a well-defined user story
+- **Works for both**: Web/software projects AND embedded/hardware projects (auto-detects)
 
 ## Command Invocation
 
@@ -99,11 +102,27 @@ Design Summary:
 
 ### Phase 2: Implementation
 
-4. **senior-software-engineer** (Agent 3)
+**Project Type Detection**: Automatically determine whether to use **senior-software-engineer** or **embedded-systems-engineer** based on:
+- Presence of `platformio.ini`, `sdkconfig`, or `.ino` files
+- ESP32/microcontroller keywords in CLAUDE.md
+- Embedded-related dependencies or build tools
+
+4. **Implementation Agent** (Agent 3) - Auto-selected based on project type:
+
+   **For Web/Software Projects** → `senior-software-engineer`:
    - Read PRD and design brief
    - Use serena-mcp to find existing patterns
    - Implement feature following TDD
    - Run unit tests
+   - Commit changes with clear messages
+   - Output: Implementation in feature branch
+
+   **For Embedded/Hardware Projects** → `embedded-systems-engineer`:
+   - Read PRD and design brief
+   - Use serena-mcp to find existing patterns
+   - Implement feature for ESP32/microcontroller
+   - Handle hardware constraints (memory, RTOS, real-time)
+   - Run unit tests (if applicable) and build checks
    - Commit changes with clear messages
    - Output: Implementation in feature branch
 
@@ -124,7 +143,7 @@ Design Summary:
    - Run tests, capture results
    - Output: `tests/dark-mode.spec.ts`
 
-If tests fail → senior-software-engineer fixes → re-run tests
+If tests fail → implementation agent (senior-software-engineer OR embedded-systems-engineer) fixes → re-run tests
 
 ### Phase 4: Code Review
 
@@ -135,7 +154,7 @@ If tests fail → senior-software-engineer fixes → re-run tests
    - Provide structured feedback
    - Output: Review report
 
-**If blockers found**: senior-software-engineer addresses → code-reviewer re-reviews
+**If blockers found**: implementation agent addresses → code-reviewer re-reviews
 
 **If approved**: Proceed to PR creation
 
@@ -231,6 +250,12 @@ Pull feature description from Linear ticket.
 ### `--worktree`
 Execute in a dedicated git worktree (recommended for large features).
 
+### `--force-software`
+Force use of senior-software-engineer even if embedded project is detected.
+
+### `--force-embedded`
+Force use of embedded-systems-engineer even if software project is detected.
+
 ## Example Execution
 
 ```bash
@@ -258,6 +283,7 @@ Phase 1: Discovery & Planning
    Proceed? [Y/n]: y
 
 Phase 2: Implementation
+  🔍 Detected project type: Web/Software
   💻 senior-software-engineer implementing...
      ✅ Created ThemeContext
      ✅ Implemented ThemeToggle component
@@ -283,7 +309,7 @@ Phase 4: Code Review
      💡 1 suggestion: Extract theme constants
      ⏱️  Duration: 3 minutes
 
-  💻 senior-software-engineer applying feedback...
+  💻 implementation agent applying feedback...
      ✅ Extracted theme constants to constants.ts
      ✅ Code review: APPROVED
 
@@ -337,7 +363,7 @@ Next steps:
    Issue: Dark mode not applying to navigation bar
 
    Options:
-   1. [Auto] senior-software-engineer investigates and fixes
+   1. [Auto] implementation agent investigates and fixes
    2. [Manual] You debug in worktree: cd ../<repo>-dark-mode
 
    Proceed with auto-fix? [Y/n]: y
@@ -354,7 +380,7 @@ Next steps:
    Escalating to user...
 
    Options:
-   1. senior-software-engineer addresses automatically
+   1. implementation agent addresses automatically
    2. You review manually before proceeding
 
    Auto-fix? [Y/n]: n
@@ -377,6 +403,79 @@ Next steps:
    How to proceed? [1/2/3]: 1
 
    ❌ Feature delivery paused. Please resolve conflicts manually.
+```
+
+## Example: Embedded Systems Project
+
+```bash
+> /ship-feature "Add temperature sensor reading to MQTT publish"
+
+🚀 Starting feature delivery workflow...
+
+Phase 1: Discovery & Planning
+  🔍 code-archaeologist exploring codebase...
+     ✅ Found existing sensor reading patterns in sensors/
+     ✅ MQTT publish function located at src/mqtt_client.cpp
+     ✅ Similar I2C sensor integration in sensors/humidity.cpp
+
+  📝 product-manager creating PRD...
+     ✅ PRD complete: Plans/prd-temp-sensor.md
+
+  🎨 ux-designer creating design brief...
+     ✅ Design complete: Plans/design-temp-sensor.md
+
+📋 [Checkpoint 1] Review planning artifacts?
+   PRD: Add DS18B20 temperature sensor with MQTT integration
+   Design: Read sensor every 60s, publish to topic "device/temp"
+   Estimated effort: 2 hours
+
+   Proceed? [Y/n]: y
+
+Phase 2: Implementation
+  🔍 Detected project type: Embedded/ESP32
+  🔧 embedded-systems-engineer implementing...
+     ✅ Created TemperatureSensor class (src/sensors/temperature.cpp)
+     ✅ Integrated OneWire and DallasTemperature libraries
+     ✅ Added sensor task to FreeRTOS scheduler
+     ✅ Integrated MQTT publish to main loop
+     ✅ Added memory-efficient float formatting
+     ✅ Build successful, flash size: 847KB/1.2MB
+     ⏱️  Duration: 15 minutes
+
+Phase 3: Testing
+  🧪 test-automation-engineer writing tests...
+     ⚠️  Note: Hardware-in-loop testing limited, focusing on build validation
+     ✅ Build test: Compiles successfully
+     ✅ Static analysis: No warnings
+     ✅ Memory usage: Within bounds (heap: 45%, stack: 32%)
+     ⏱️  Duration: 5 minutes
+
+Phase 4: Code Review
+  👀 code-reviewer analyzing changes...
+     ✅ Real-time constraints: Task timing verified
+     ✅ Memory safety: No heap fragmentation risks
+     ✅ Thread safety: Proper mutex usage
+     ✅ Hardware integration: I2C pins correctly configured
+     ✅ Code review: APPROVED
+
+Phase 5: Documentation & PR
+  📚 documentation-specialist updating CLAUDE.md...
+     ✅ Added temperature sensor integration pattern
+
+  📤 Preparing pull request...
+     Title: Add DS18B20 temperature sensor with MQTT integration
+     Branch: feature/temp-sensor
+     Files changed: 3 files (+156, -8)
+     Build: Successful
+
+✅ Pull request created: PR #15
+   URL: https://github.com/user/esp32-project/pull/15
+
+📊 Summary:
+   ⏱️  Total time: 23 minutes
+   ✅ All quality gates passed
+   🔧 Build verified for ESP32
+   💾 Memory usage optimized
 ```
 
 ## Integration with /Linear

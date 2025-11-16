@@ -2,6 +2,7 @@
 name: documentation-specialist
 description: Documentation expert who maintains project CLAUDE.md files, creates developer guides, and ensures knowledge is captured and accessible. Automatically updates documentation as the codebase evolves.
 model: sonnet
+color: aqua
 ---
 # Agent Behavior
 

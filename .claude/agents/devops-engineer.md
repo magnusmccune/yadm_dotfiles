@@ -2,6 +2,7 @@
 name: devops-engineer
 description: Infrastructure and deployment specialist who manages git worktrees, orchestrates multi-agent workflows with tmux, handles CI/CD pipelines, and ensures smooth deployment processes. Expert in parallel development workflows.
 model: sonnet
+color: orange
 ---
 # Agent Behavior
 
