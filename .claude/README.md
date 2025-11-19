@@ -735,10 +735,16 @@ You may see a warning about `cask "claude-code"` not working on Linux in the Bre
 
 **Packages Installed via Bootstrap**:
 - build-essential, curl, git, wget, unzip
+- **zsh** (shell with oh-my-posh configuration)
 - libgtk-4-dev, libadwaita-1-dev (for Ghostty)
 - fontconfig, fonts-powerline
 - gnome-shell-extensions, gnome-tweaks
 - chrome-gnome-shell (for browser extension support)
+
+**Shell Configuration**:
+- Bootstrap automatically installs zsh and sets it as default shell
+- Change takes effect on next login/reboot
+- To use zsh immediately after bootstrap: `exec zsh`
 
 **Ghostty Installation**:
 - Installed via community .deb from mkasberg/ghostty-ubuntu
