@@ -71,11 +71,11 @@ echo "Installing core Homebrew tools..."
 if [[ "$OS" == "Darwin" ]]; then
   # macOS: Install GUI-related tools
   brew tap homebrew/cask-fonts
-  brew install yadm gnupg pinentry-mac git git-delta
+  brew install yadm git git-delta
   brew install --cask font-jetbrains-mono-nerd-font
 else
   # Linux: CLI tools only
-  brew install yadm gnupg pinentry-curses git git-delta
+  brew install yadm git git-delta
 fi
 echo "✓ Core tools installed"
 
@@ -86,24 +86,7 @@ if [[ -f "$HOME/.Brewfile" ]]; then
   echo "✓ Brewfile packages installed"
 fi
 
-# 6) GPG pinentry (platform-specific) - AFTER brew installs pinentry
-echo "Configuring GPG pinentry..."
-mkdir -p "$HOME/.gnupg"
-if [[ "$OS" == "Darwin" ]]; then
-  echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
-else
-  echo "pinentry-program $(brew --prefix)/bin/pinentry-curses" > "$HOME/.gnupg/gpg-agent.conf"
-fi
-
-# Add GPG_TTY to .zshrc if it exists and doesn't already have it
-if [[ -f "$HOME/.zshrc" ]]; then
-  grep -q 'GPG_TTY' "$HOME/.zshrc" 2>/dev/null || echo 'export GPG_TTY=$(tty)' >> "$HOME/.zshrc"
-fi
-
-gpgconf --kill gpg-agent || true
-echo "✓ GPG configured"
-
-# 7) macOS-only: iTerm2 preferences
+# 6) macOS-only: iTerm2 preferences
 if [[ "$OS" == "Darwin" ]]; then
   echo "Configuring iTerm2..."
   mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
@@ -112,7 +95,7 @@ if [[ "$OS" == "Darwin" ]]; then
   echo "✓ iTerm2 configured"
 fi
 
-# 8) Ubuntu/Debian-specific: Ghostty and fonts
+# 7) Ubuntu/Debian-specific: Ghostty and fonts
 if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
 
   # Install Ghostty terminal via community .deb
@@ -159,7 +142,7 @@ if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
   fi
 fi
 
-# 9) GNOME-specific: Apply dconf settings
+# 8) GNOME-specific: Apply dconf settings
 if [[ "$OS" == "Linux" ]] && [[ "${XDG_CURRENT_DESKTOP:-}" == *"GNOME"* ]]; then
   if [ -f "$HOME/.config/dconf/user.conf" ]; then
     echo "Restoring GNOME settings..."
@@ -179,5 +162,8 @@ if [[ "$OS" == "Linux" ]]; then
   echo "  1. Run: exec zsh"
   echo "  2. Verify: ghostty --version"
   echo "  3. Verify: oh-my-posh --version"
+  echo ""
+  echo "GPG/pinentry not configured - install manually if needed:"
+  echo "  brew install gnupg pinentry-curses"
 fi
 echo ""
