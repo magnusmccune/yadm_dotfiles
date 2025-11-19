@@ -86,7 +86,20 @@ if [[ -f "$HOME/.Brewfile" ]]; then
   echo "✓ Brewfile packages installed"
 fi
 
-# 6) macOS-only: iTerm2 preferences
+# 6) Install zsh-autocomplete from GitHub (both macOS and Linux)
+if [ ! -d "$HOME/.zsh/zsh-autocomplete" ]; then
+  echo "Installing zsh-autocomplete..."
+  mkdir -p "$HOME/.zsh"
+  if git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "$HOME/.zsh/zsh-autocomplete" 2>/dev/null; then
+    echo "✓ zsh-autocomplete installed"
+  else
+    echo "⚠️  zsh-autocomplete installation failed - you may need to install it manually"
+  fi
+else
+  echo "✓ zsh-autocomplete already installed"
+fi
+
+# 7) macOS-only: iTerm2 preferences
 if [[ "$OS" == "Darwin" ]]; then
   echo "Configuring iTerm2..."
   mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
@@ -95,7 +108,7 @@ if [[ "$OS" == "Darwin" ]]; then
   echo "✓ iTerm2 configured"
 fi
 
-# 7) Ubuntu/Debian-specific: Ghostty and fonts
+# 8) Linux-specific: Ghostty and fonts
 if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
 
   # Install Ghostty terminal via community .deb
@@ -148,7 +161,7 @@ if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
   fi
 fi
 
-# 8) GNOME-specific: Apply dconf settings
+# 9) GNOME-specific: Apply dconf settings
 if [[ "$OS" == "Linux" ]] && [[ "${XDG_CURRENT_DESKTOP:-}" == *"GNOME"* ]]; then
   if [ -f "$HOME/.config/dconf/user.conf" ]; then
     echo "Restoring GNOME settings..."
