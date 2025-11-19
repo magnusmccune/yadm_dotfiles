@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "=== Starting yadm bootstrap ==="
+
 # Detect OS
 OS=$(uname -s)
+echo "Detected OS: $OS"
 
 # macOS-specific: Xcode Command Line Tools
 if [[ "$OS" == "Darwin" ]]; then
   if ! xcode-select -p >/dev/null 2>&1; then
+    echo "Installing Xcode Command Line Tools..."
     xcode-select --install || true
     # wait until installed (best-effort)
     until xcode-select -p >/dev/null 2>&1; do sleep 2; done
@@ -15,6 +19,7 @@ fi
 
 # 1) Homebrew (install if missing, then load into PATH for this run)
 if ! command -v brew >/dev/null 2>&1; then
+  echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
@@ -24,52 +29,17 @@ if [[ "$OS" == "Darwin" ]]; then
 else
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
+echo "Homebrew: $(brew --version | head -1)"
 
 # macOS ARM-specific: Rosetta
 if [[ "$OS" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
   /usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1 || true
 fi
 
-# 2) Core tools (platform-specific)
-if [[ "$OS" == "Darwin" ]]; then
-  # macOS: Install GUI-related tools
-  brew tap homebrew/cask-fonts
-  brew install yadm gnupg pinentry-mac git git-delta
-  brew install --cask font-jetbrains-mono-nerd-font
-else
-  # Linux: CLI tools only
-  brew install yadm gnupg pinentry-curses git git-delta
-fi
-
-# 3) GPG pinentry (platform-specific)
-mkdir -p "$HOME/.gnupg"
-if [[ "$OS" == "Darwin" ]]; then
-  echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
-else
-  echo "pinentry-program $(brew --prefix)/bin/pinentry-curses" > "$HOME/.gnupg/gpg-agent.conf"
-fi
-grep -q 'GPG_TTY' "$HOME/.zshrc" 2>/dev/null || echo 'export GPG_TTY=$(tty)' >> "$HOME/.zshrc"
-gpgconf --kill gpg-agent || true
-
-# 4) macOS-only: iTerm2 preferences
-if [[ "$OS" == "Darwin" ]]; then
-  mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
-  defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
-  defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
-fi
-
-# 5) Restore apps from Brewfile (YADM provides OS-specific version)
-[[ -f "$HOME/.Brewfile" ]] && brew bundle --file "$HOME/.Brewfile"
-
-# 6) yadm niceties
-yadm alt   || true   # apply os/host alternates
-yadm perms || true   # fix ~/.ssh perms etc.
-
-# 7) Ubuntu/Debian-specific: System packages and Ghostty
+# 2) Ubuntu/Debian-specific: System packages FIRST
 if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
-  echo "Setting up Ubuntu GUI environment..."
+  echo "Installing Ubuntu system packages..."
 
-  # Essential packages for GUI development
   sudo apt update
   sudo apt install -y \
     build-essential \
@@ -84,38 +54,130 @@ if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
     fonts-powerline \
     gnome-shell-extensions \
     gnome-tweaks \
-    chrome-gnome-shell
+    chrome-gnome-shell \
+    dconf-cli
+
+  echo "✓ System packages installed"
+fi
+
+# 3) yadm alternates - Run EARLY to create .zshrc from template
+echo "Applying yadm alternates..."
+yadm alt   || true   # apply os/host alternates
+yadm perms || true   # fix ~/.ssh perms etc.
+echo "✓ yadm alternates applied"
+
+# 4) Core Homebrew tools
+echo "Installing core Homebrew tools..."
+if [[ "$OS" == "Darwin" ]]; then
+  # macOS: Install GUI-related tools
+  brew tap homebrew/cask-fonts
+  brew install yadm gnupg pinentry-mac git git-delta
+  brew install --cask font-jetbrains-mono-nerd-font
+else
+  # Linux: CLI tools only
+  brew install yadm gnupg pinentry-curses git git-delta
+fi
+echo "✓ Core tools installed"
+
+# 5) Restore apps from Brewfile (YADM provides OS-specific version)
+if [[ -f "$HOME/.Brewfile" ]]; then
+  echo "Installing packages from Brewfile..."
+  brew bundle --file "$HOME/.Brewfile"
+  echo "✓ Brewfile packages installed"
+fi
+
+# 6) GPG pinentry (platform-specific) - AFTER brew installs pinentry
+echo "Configuring GPG pinentry..."
+mkdir -p "$HOME/.gnupg"
+if [[ "$OS" == "Darwin" ]]; then
+  echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > "$HOME/.gnupg/gpg-agent.conf"
+else
+  echo "pinentry-program $(brew --prefix)/bin/pinentry-curses" > "$HOME/.gnupg/gpg-agent.conf"
+fi
+
+# Add GPG_TTY to .zshrc if it exists and doesn't already have it
+if [[ -f "$HOME/.zshrc" ]]; then
+  grep -q 'GPG_TTY' "$HOME/.zshrc" 2>/dev/null || echo 'export GPG_TTY=$(tty)' >> "$HOME/.zshrc"
+fi
+
+gpgconf --kill gpg-agent || true
+echo "✓ GPG configured"
+
+# 7) macOS-only: iTerm2 preferences
+if [[ "$OS" == "Darwin" ]]; then
+  echo "Configuring iTerm2..."
+  mkdir -p "$HOME/.config/iterm2" "$HOME/Library/Application Support/iTerm2"
+  defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.config/iterm2"
+  defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+  echo "✓ iTerm2 configured"
+fi
+
+# 8) Ubuntu/Debian-specific: Ghostty and fonts
+if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
 
   # Install Ghostty terminal via community .deb
   if ! command -v ghostty >/dev/null 2>&1; then
     echo "Installing Ghostty terminal..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
+    if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"; then
+      echo "✓ Ghostty installed"
+    else
+      echo "⚠️  Ghostty installation failed - you may need to install it manually"
+    fi
+  else
+    echo "✓ Ghostty already installed"
   fi
 
   # Install JetBrains Mono Nerd Font
   if [ ! -d "$HOME/.local/share/fonts/JetBrainsMono" ]; then
     echo "Installing JetBrains Mono Nerd Font..."
     mkdir -p "$HOME/.local/share/fonts"
+    ORIGINAL_DIR=$(pwd)
     cd /tmp
-    curl -fLo JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-    unzip -o JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMono/"
-    rm JetBrainsMono.zip
-    fc-cache -fv
-    cd -
+    if curl -fLo JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip; then
+      unzip -o JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMono/"
+      rm JetBrainsMono.zip
+      fc-cache -fv
+      echo "✓ Nerd Font installed"
+    else
+      echo "⚠️  Font download failed"
+    fi
+    cd "$ORIGINAL_DIR"
+  else
+    echo "✓ JetBrainsMono Nerd Font already installed"
   fi
 
   # Change default shell to zsh
   if [ "$SHELL" != "$(which zsh)" ]; then
     echo "Changing default shell to zsh..."
-    chsh -s "$(which zsh)"
-    echo "✓ Shell changed to zsh (will take effect on next login)"
+    if chsh -s "$(which zsh)"; then
+      echo "✓ Shell changed to zsh (will take effect on next login)"
+    else
+      echo "⚠️  Failed to change shell - you may need to run: chsh -s \$(which zsh)"
+    fi
+  else
+    echo "✓ Default shell is already zsh"
   fi
 fi
 
-# 8) GNOME-specific: Apply dconf settings
+# 9) GNOME-specific: Apply dconf settings
 if [[ "$OS" == "Linux" ]] && [[ "${XDG_CURRENT_DESKTOP:-}" == *"GNOME"* ]]; then
   if [ -f "$HOME/.config/dconf/user.conf" ]; then
     echo "Restoring GNOME settings..."
-    dconf load / < "$HOME/.config/dconf/user.conf" || true
+    if dconf load / < "$HOME/.config/dconf/user.conf"; then
+      echo "✓ GNOME settings restored"
+    else
+      echo "⚠️  GNOME settings restoration failed"
+    fi
   fi
 fi
+
+echo ""
+echo "=== Bootstrap complete! ==="
+echo ""
+echo "Next steps:"
+if [[ "$OS" == "Linux" ]]; then
+  echo "  1. Run: exec zsh"
+  echo "  2. Verify: ghostty --version"
+  echo "  3. Verify: oh-my-posh --version"
+fi
+echo ""
