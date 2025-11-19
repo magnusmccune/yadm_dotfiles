@@ -110,21 +110,27 @@ if [[ "$OS" == "Linux" ]] && command -v apt >/dev/null 2>&1; then
     echo "✓ Ghostty already installed"
   fi
 
-  # Install JetBrains Mono Nerd Font
+  # Install JetBrains Mono Nerd Font (optional - skip on failure)
   if [ ! -d "$HOME/.local/share/fonts/JetBrainsMono" ]; then
-    echo "Installing JetBrains Mono Nerd Font..."
-    mkdir -p "$HOME/.local/share/fonts"
-    ORIGINAL_DIR=$(pwd)
-    cd /tmp
-    if curl -fLo JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip; then
-      unzip -o JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMono/"
-      rm JetBrainsMono.zip
-      fc-cache -fv
-      echo "✓ Nerd Font installed"
+    echo "Installing JetBrains Mono Nerd Font (this may take a minute)..."
+    mkdir -p "$HOME/.local/share/fonts/JetBrainsMono"
+
+    # Download with timeout to prevent hanging
+    if timeout 120 curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip 2>/dev/null; then
+      if unzip -q -o /tmp/JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMono/" 2>/dev/null; then
+        rm -f /tmp/JetBrainsMono.zip
+        fc-cache -fv >/dev/null 2>&1
+        echo "✓ Nerd Font installed"
+      else
+        echo "⚠️  Font extraction failed - skipping (Ghostty has built-in icon support)"
+        rm -f /tmp/JetBrainsMono.zip
+        rm -rf "$HOME/.local/share/fonts/JetBrainsMono"
+      fi
     else
-      echo "⚠️  Font download failed"
+      echo "⚠️  Font download timed out or failed - skipping (Ghostty has built-in icon support)"
+      rm -f /tmp/JetBrainsMono.zip
+      rm -rf "$HOME/.local/share/fonts/JetBrainsMono"
     fi
-    cd "$ORIGINAL_DIR"
   else
     echo "✓ JetBrainsMono Nerd Font already installed"
   fi

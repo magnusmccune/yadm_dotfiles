@@ -1,8 +1,13 @@
 # Ghostty Terminal Configuration for Ubuntu GNOME
 # https://ghostty.org/docs
 
-# Theme (list available: ghostty +list-themes)
-theme = catppuccin-mocha
+# Shell integration - CRITICAL for SSH and sudo
+# This fixes "Error opening terminal: xterm-ghostty" on remote systems
+shell-integration-features = cursor,sudo,ssh-terminfo
+
+# Font - Works with any monospace font, Ghostty has built-in Nerd Font symbols
+font-family = monospace
+font-size = 13
 
 # Window dimensions
 window-height = 35
@@ -10,23 +15,36 @@ window-width = 140
 window-padding-x = 4
 window-padding-y = 4
 
-# Font - Nerd Font Mono variant for single-cell icons
-font-family = JetBrainsMono Nerd Font Mono
-font-size = 13
-font-thicken = true
+# Dark theme colors (manually specified for reliability)
+background = 1e1e2e
+foreground = cdd6f4
 
-# Shell integration - CRITICAL for SSH and sudo
-# This fixes "Error opening terminal: xterm-ghostty" on remote systems
-shell-integration-features = cursor,sudo,ssh-terminfo
+# Catppuccin Mocha color palette
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#bac2de
+palette = 8=#585b70
+palette = 9=#f38ba8
+palette = 10=#a6e3a1
+palette = 11=#f9e2af
+palette = 12=#89b4fa
+palette = 13=#f5c2e7
+palette = 14=#94e2d5
+palette = 15=#a6adc8
+
+# Cursor
+cursor-style = block
+cursor-style-blink = true
 
 # Behavior
 confirm-close-surface = false
 clipboard-read = allow
 clipboard-write = allow
-
-# Cursor
-cursor-style = block
-cursor-style-blink = true
 
 # Keybindings
 keybind = ctrl+shift+n=new_window
@@ -34,6 +52,3 @@ keybind = ctrl+shift+t=new_tab
 keybind = ctrl+shift+c=copy_to_clipboard
 keybind = ctrl+shift+v=paste_from_clipboard
 keybind = ctrl+shift+comma=reload_config
-
-# Performance
-unfocused-split-opacity = 0.9
