@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Export GNOME dconf settings to yadm-tracked file
+set -euo pipefail
+
+echo "Exporting GNOME dconf settings..."
+mkdir -p "$HOME/.config/dconf"
+dconf dump / > "$HOME/.config/dconf/user.conf"
+echo "✓ Settings exported to ~/.config/dconf/user.conf"
+echo ""
+echo "To track with yadm, run:"
+echo "  yadm add ~/.config/dconf/user.conf"
+echo "  yadm commit -m 'feat: update GNOME settings'"

@@ -1,0 +1,39 @@
+# Ghostty Terminal Configuration for Ubuntu GNOME
+# https://ghostty.org/docs
+
+# Theme (list available: ghostty +list-themes)
+theme = catppuccin-mocha
+
+# Window dimensions
+window-height = 35
+window-width = 140
+window-padding-x = 4
+window-padding-y = 4
+
+# Font - Nerd Font Mono variant for single-cell icons
+font-family = JetBrainsMono Nerd Font Mono
+font-size = 13
+font-thicken = true
+
+# Shell integration - CRITICAL for SSH and sudo
+# This fixes "Error opening terminal: xterm-ghostty" on remote systems
+shell-integration-features = cursor,sudo,ssh-terminfo
+
+# Behavior
+confirm-close-surface = false
+clipboard-read = allow
+clipboard-write = allow
+
+# Cursor
+cursor-style = block
+cursor-style-blink = true
+
+# Keybindings
+keybind = ctrl+shift+n=new_window
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+shift+comma=reload_config
+
+# Performance
+unfocused-split-opacity = 0.9

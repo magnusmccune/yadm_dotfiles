@@ -570,6 +570,212 @@ yadm push
 
 ---
 
+## Ubuntu 24.04 GNOME Setup
+
+### Overview
+
+This yadm configuration includes full support for Ubuntu 24.04 GNOME desktop environments with:
+- **Ghostty Terminal**: Modern, fast terminal with built-in Nerd Font support
+- **JetBrains Mono Nerd Font**: Installed automatically via bootstrap
+- **GNOME Settings**: Tracked via dconf for consistent desktop configuration
+- **GTK Theming**: Dark theme with Yaru theme by default
+- **oh-my-posh**: Consistent shell prompt across macOS and Linux
+
+### Deployment to New Ubuntu Machine
+
+```bash
+# 1. Install yadm (if not already installed)
+sudo apt install yadm
+
+# 2. Clone your dotfiles
+yadm clone git@github.com:magnusmccune/yadm_dotfiles.git
+
+# 3. Run bootstrap (this will install everything)
+yadm bootstrap
+
+# 4. Decrypt secrets
+yadm decrypt
+
+# 5. Reload shell
+exec zsh
+
+# 6. Verify installations
+ghostty --version
+oh-my-posh --version
+claude --version
+```
+
+### Post-Bootstrap Steps
+
+**1. Verify Ghostty Installation**:
+```bash
+ghostty --version
+ghostty +list-themes  # See available themes
+```
+
+**2. Set Ghostty as Default Terminal** (optional):
+```bash
+# GNOME default terminal
+gsettings set org.gnome.desktop.default-applications.terminal exec 'ghostty'
+
+# Or use GNOME Settings UI:
+# Settings > Default Applications > Terminal
+```
+
+**3. Test Font Rendering**:
+```bash
+fc-list | grep JetBrains
+# Should show JetBrainsMono Nerd Font variants
+```
+
+Launch Ghostty and verify Nerd Font icons render correctly.
+
+**4. Customize GNOME Settings**:
+
+After personalizing your GNOME desktop (keybindings, extensions, themes), export your settings:
+
+```bash
+~/.local/bin/export-gnome-settings
+yadm add ~/.config/dconf/user.conf
+yadm commit -m "feat: update GNOME settings"
+yadm push
+```
+
+**5. Install GNOME Extensions** (manual):
+
+Visit https://extensions.gnome.org/ and install via browser extension.
+
+Recommended extensions:
+- **Dash to Dock**: Better dock functionality
+- **AppIndicator Support**: Tray icon support
+- **Clipboard Indicator**: Clipboard history
+- **Caffeine**: Prevent screen lock
+- **Sound Input & Output Device Chooser**: Quick audio switching
+
+### Configuration Files
+
+**Ghostty**: [.config/ghostty/config](~/.config/ghostty/config)
+- Theme: catppuccin-mocha
+- Font: JetBrainsMono Nerd Font Mono
+- Shell integration enabled (SSH + sudo)
+
+**GNOME**: [.config/dconf/user.conf](~/.config/dconf/user.conf)
+- Dark theme (Yaru-dark)
+- Workspace keybindings (Super+1-4)
+- Favorite apps configured
+
+**GTK**: [.config/gtk-4.0/settings.ini](~/.config/gtk-4.0/settings.ini)
+- Consistent theming for GTK4 apps
+
+**Fonts**: [.config/fontconfig/fonts.conf](~/.config/fontconfig/fonts.conf)
+- Monospace default: JetBrainsMono Nerd Font
+- Optimized rendering hints
+
+### Troubleshooting
+
+**Ghostty SSH Issues**
+
+If remote SSH connections fail with:
+```
+Error opening terminal: xterm-ghostty
+```
+
+The `shell-integration-features = ssh-terminfo` setting should handle this automatically by copying terminfo to remote systems on first connection.
+
+If it doesn't work, manually copy terminfo:
+```bash
+infocmp -x xterm-ghostty | ssh REMOTE_HOST -- tic -x -
+```
+
+Or add to `~/.ssh/config`:
+```
+Host *
+    SetEnv TERM=xterm-256color
+```
+
+**Font Icons Not Showing**
+
+Ghostty has built-in Nerd Font symbol support, so icons should work even without Nerd Fonts installed. If you're seeing boxes instead of icons:
+
+1. Verify font installation:
+   ```bash
+   fc-list | grep -i nerd
+   fc-cache -fv  # Rebuild font cache
+   ```
+
+2. Check Ghostty config:
+   ```bash
+   grep font-family ~/.config/ghostty/config
+   # Should show: JetBrainsMono Nerd Font Mono
+   ```
+
+3. Restart Ghostty
+
+**GNOME Settings Not Applied**
+
+If GNOME settings from dconf don't apply after bootstrap:
+
+1. Check if dconf is installed:
+   ```bash
+   which dconf
+   ```
+
+2. Manually load settings:
+   ```bash
+   dconf load / < ~/.config/dconf/user.conf
+   ```
+
+3. Log out and back in
+
+**Homebrew Cask Warning**
+
+You may see a warning about `cask "claude-code"` not working on Linux in the Brewfile. This is expected - Claude Code is installed separately on Linux via apt/snap/appimage, not through Homebrew casks. The line is ignored harmlessly.
+
+### Ubuntu-Specific Notes
+
+**Packages Installed via Bootstrap**:
+- build-essential, curl, git, wget, unzip
+- libgtk-4-dev, libadwaita-1-dev (for Ghostty)
+- fontconfig, fonts-powerline
+- gnome-shell-extensions, gnome-tweaks
+- chrome-gnome-shell (for browser extension support)
+
+**Ghostty Installation**:
+- Installed via community .deb from mkasberg/ghostty-ubuntu
+- Auto-updates not configured (check for updates manually)
+- Alternative: Use snap (`snap install ghostty`)
+
+**oh-my-posh**:
+- Installed via Homebrew (in `.Brewfile##os.Linux`)
+- Theme: `.m3.omp.json` (already tracked)
+- Configured in `.zshrc##template`
+
+### Maintaining Your Setup
+
+**Weekly**:
+```bash
+# Update GNOME settings if you changed anything
+~/.local/bin/export-gnome-settings
+yadm status
+yadm commit -m "feat: update GNOME settings"
+yadm push
+```
+
+**Monthly**:
+```bash
+# Update Homebrew packages
+brew update && brew upgrade
+
+# Update Ghostty
+# Check https://github.com/mkasberg/ghostty-ubuntu/releases
+# Download and install latest .deb
+
+# Update system packages
+sudo apt update && sudo apt upgrade
+```
+
+---
+
 ## Resources
 
 - **Conventional Commits**: https://www.conventionalcommits.org/

@@ -41,6 +41,7 @@ brew "vim"
 brew "wget"
 brew "yamllint"
 brew "netcat"
+brew "oh-my-posh"
 
 # Development Tools
 brew "maven"
