@@ -52,5 +52,5 @@
       "Bash(docker push:*)"
     ]
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }

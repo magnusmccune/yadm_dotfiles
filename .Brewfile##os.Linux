@@ -27,7 +27,6 @@ brew "docker-compose"
 brew "helm"
 brew "kubernetes-cli"
 brew "k3d"
-brew "terraform", link: false
 brew "hashicorp/tap/terraform"
 brew "opentofu"
 

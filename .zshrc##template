@@ -265,6 +265,66 @@ alias firewall-debug='sudo /usr/libexec/ApplicationFirewall/socketfilterfw -d'
 alias firewall-status='sudo ufw status verbose'
 {% endif %}
 
+# ~/.zshrc (templated with yadm)
+
+{% if yadm.os == "Darwin" %}
+netinfo() {
+  local iface="$1"
+  if [[ -z "$iface" ]]; then
+    echo "Usage: netinfo <interface>" >&2
+    return 1
+  fi
+
+  echo "Interface: $iface"
+  echo "IP:       $(ipconfig getifaddr "$iface" 2>/dev/null)"
+  echo "Gateway:  $(ipconfig getoption "$iface" router)"
+  echo "Netmask:  $(ipconfig getoption "$iface" subnet_mask)"
+  echo "DNS:      $(ipconfig getoption "$iface" domain_name_server)"
+}
+{% else %}
+netinfo() {
+  local iface="$1"
+  if [[ -z "$iface" ]]; then
+    echo "Usage: netinfo <interface>" >&2
+    return 1
+  fi
+
+  # Convert CIDR prefix (e.g. 24) -> dotted netmask (255.255.255.0)
+  cidr_to_netmask() {
+    local cidr=$1 i mask="" full_octets partial_octet octet
+    full_octets=$(( cidr / 8 ))
+    partial_octet=$(( cidr % 8 ))
+    for ((i=0; i<4; i++)); do
+      if   (( i < full_octets )); then
+        octet=255
+      elif (( i == full_octets && partial_octet > 0 )); then
+        octet=$(( 256 - 2**(8-partial_octet) ))
+      else
+        octet=0
+      fi
+      mask+=$octet
+      (( i < 3 )) && mask+=.
+    done
+    printf '%s\n' "$mask"
+  }
+
+  local ip_cidr ip_addr prefix mask gw dns
+  ip_cidr=$(ip -4 addr show dev "$iface" 2>/dev/null | awk '/inet / {print $2; exit}')
+  ip_addr=${ip_cidr%%/*}
+  prefix=${ip_cidr##*/}
+  mask=$(cidr_to_netmask "$prefix")
+  gw=$(ip route show default 0.0.0.0/0 dev "$iface" 2>/dev/null | awk '{print $3; exit}')
+  [[ -z "$gw" ]] && gw=$(ip route show default 2>/dev/null | awk '{print $3; exit}')
+  dns=$(grep '^nameserver' /etc/resolv.conf 2>/dev/null | awk '{print $2}' | paste -sd ' ' -)
+
+  echo "Interface: $iface"
+  echo "IP:       $ip_addr"
+  echo "Gateway:  $gw"
+  echo "Netmask:  $mask"
+  echo "DNS:      $dns"
+}
+{% endif %}
+
 # Python venvs - set local version with pyenv first `pyenv local 3.y`
 function venv-create() {
     local dir_name=$(basename $(pwd))
